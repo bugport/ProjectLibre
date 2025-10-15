@@ -23,8 +23,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    // Compile against ProjectLibre classes compiled by Ant
+    implementation(files("${'$'}{rootProject.projectDir}/projectlibre_build/build"))
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+// Ensure ProjectLibre classes are compiled before compiling this module
+tasks.named("compileJava") {
+    dependsOn(":antCompile")
 }
