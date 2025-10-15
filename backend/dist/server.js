@@ -7,9 +7,12 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const zod_1 = require("zod");
 const store_1 = require("./store");
+const swagger_1 = require("./swagger");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Swagger UI and OpenAPI JSON
+(0, swagger_1.setupSwagger)(app);
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 // Projects
 const ProjectSchema = zod_1.z.object({ name: zod_1.z.string(), startDate: zod_1.z.string(), finishDate: zod_1.z.string().optional(), description: zod_1.z.string().optional() });

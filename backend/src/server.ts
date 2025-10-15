@@ -2,10 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import { z } from 'zod';
 import { store } from './store';
+import { setupSwagger } from './swagger';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Swagger UI and OpenAPI JSON
+setupSwagger(app);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
