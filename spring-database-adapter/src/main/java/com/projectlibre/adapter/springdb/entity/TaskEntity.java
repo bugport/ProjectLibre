@@ -18,6 +18,9 @@ public class TaskEntity {
     @Column(name = "project_unique_id", nullable = false)
     private Long projectUniqueId;
 
+    @Column(name = "parent_unique_id")
+    private Long parentUniqueId;
+
     @Column(name = "start_ms")
     private Long startMs;
 
@@ -29,13 +32,14 @@ public class TaskEntity {
 
     protected TaskEntity() {}
 
-    public TaskEntity(Long uniqueId, String name, Long projectUniqueId, Long startMs, Long endMs, String notes) {
+    public TaskEntity(Long uniqueId, String name, Long projectUniqueId, Long startMs, Long endMs, String notes, Long parentUniqueId) {
         this.uniqueId = uniqueId;
         this.name = name;
         this.projectUniqueId = projectUniqueId;
         this.startMs = startMs;
         this.endMs = endMs;
         this.notes = notes;
+        this.parentUniqueId = parentUniqueId;
     }
 
     public Long getId() { return id; }
@@ -51,4 +55,6 @@ public class TaskEntity {
     public void setEndMs(Long endMs) { this.endMs = endMs; }
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+    public Long getParentUniqueId() { return parentUniqueId; }
+    public void setParentUniqueId(Long parentUniqueId) { this.parentUniqueId = parentUniqueId; }
 }
