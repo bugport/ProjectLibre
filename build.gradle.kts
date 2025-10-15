@@ -268,3 +268,38 @@ tasks.register("docsPdf") {
     description = "Alias for compileDocsToPdf"
     dependsOn(compileDocsToPdf)
 }
+
+// Frontend (React+Vite) helpers
+val frontendDir = file("frontend")
+
+// Build frontend using the Docker builder image, ensuring a reproducible environment
+val frontendBuildDocker = tasks.register<Exec>("frontendBuildDocker") {
+    group = "frontend"
+    description = "Build the React frontend using Dockerfile.builder"
+
+    // Rebuild builder image (safe and fast if cached)
+    commandLine("bash", "-lc", "docker build -f Dockerfile.builder -t projectlibre/builder:latest . && " +
+        "docker run --rm -v \"$PWD\":/workspace -w /workspace/frontend projectlibre/builder:latest bash -lc 'if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run build'" )
+
+    // Track sources and outputs for up-to-date checks
+    inputs.files(fileTree(frontendDir) { include("**/*"); exclude("dist/**", "node_modules/**") })
+    outputs.dir(frontendDir.resolve("dist"))
+}
+
+// Build a lightweight runtime image that serves the built assets with nginx
+val frontendDockerImage = tasks.register<Exec>("frontendDockerImage") {
+    group = "frontend"
+    description = "Build the nginx runtime image from Dockerfile.front (serves ./frontend/dist)"
+    dependsOn(frontendBuildDocker)
+
+    commandLine("bash", "-lc", "docker build -f Dockerfile.front -t projectlibre/frontend:latest .")
+}
+
+// Run the frontend container locally
+tasks.register<Exec>("frontendDockerRun") {
+    group = "frontend"
+    description = "Run the frontend docker image locally on http://localhost:8080"
+    dependsOn(frontendDockerImage)
+
+    commandLine("bash", "-lc", "docker run --rm -p 8080:80 projectlibre/frontend:latest")
+}

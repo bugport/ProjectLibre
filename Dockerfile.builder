@@ -23,6 +23,7 @@ RUN apt-get update \
        dpkg-dev \
        make \
        curl \
+       nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Create build user to avoid root-owned artifacts
@@ -31,4 +32,4 @@ USER builder
 WORKDIR /workspace
 
 # Default command shows Ant version; mount the repo and override in CI
-CMD ["bash", "-lc", "java -version && ant -version"]
+CMD ["bash", "-lc", "java -version && ant -version && node -v && npm -v"]

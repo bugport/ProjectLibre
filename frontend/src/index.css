@@ -1,0 +1,7 @@
+/* Reset base margins for MUI layout */
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+}

@@ -37,6 +37,45 @@ Configure in `projectlibre_build/build.properties`:
 - App jar under `projectlibre_build/dist/`
 - Packages under `projectlibre_build/packages/`
 
+## Frontend module (React + Vite)
+
+Location: `frontend/`
+
+Build options:
+- Local: `cd frontend && npm ci && npm run build` -> outputs to `frontend/dist/`
+- Dockerized via Gradle (recommended reproducible env):
+  - `./gradlew frontendBuildDocker` builds the frontend using `Dockerfile.builder`
+  - `./gradlew frontendDockerImage` packages the built `dist/` into an nginx image
+  - `./gradlew frontendDockerRun` runs the nginx image at `http://localhost:8080`
+
+Runtime image details (`Dockerfile.front`):
+- Multi-purpose runtime based on `nginx:alpine`
+- Copies `./frontend/dist` to `/usr/share/nginx/html/`
+- Exposes port `80`
+
+Notes:
+- Ensure `docker` is installed for the Gradle docker tasks
+- The builder image in `Dockerfile.builder` includes Node.js/npm to enable the frontend build
+
+## Backend module (Node + Express + TS)
+
+Location: `backend/`
+
+Run locally:
+- `cd backend && npm install && npm run dev` (hot reload)
+- `cd backend && npm run build && npm start` (compiled)
+
+Endpoints:
+- `GET /health` -> `{ status: "ok" }`
+- `GET/POST/PATCH/DELETE /api/projects`
+- `GET/POST/PATCH/DELETE /api/tasks` (supports `?projectId=<id>`)
+- `GET/POST/PATCH/DELETE /api/resources`
+- `GET/POST/PATCH/DELETE /api/calendars`
+
+Docker:
+- `cd backend && docker build -t projectlibre/backend:latest .`
+- `docker run --rm -p 3001:3001 projectlibre/backend:latest`
+
 ## Common build issues
 - Ensure JDK 21 is used (Ant `javac` uses `source=21 target=21`).
 - On macOS, install GNU tar: `brew install gnu-tar` (provides `gtar`).
