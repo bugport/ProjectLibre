@@ -57,6 +57,25 @@ Notes:
 - Ensure `docker` is installed for the Gradle docker tasks
 - The builder image in `Dockerfile.builder` includes Node.js/npm to enable the frontend build
 
+## Backend module (Node + Express + TS)
+
+Location: `backend/`
+
+Run locally:
+- `cd backend && npm install && npm run dev` (hot reload)
+- `cd backend && npm run build && npm start` (compiled)
+
+Endpoints:
+- `GET /health` -> `{ status: "ok" }`
+- `GET/POST/PATCH/DELETE /api/projects`
+- `GET/POST/PATCH/DELETE /api/tasks` (supports `?projectId=<id>`)
+- `GET/POST/PATCH/DELETE /api/resources`
+- `GET/POST/PATCH/DELETE /api/calendars`
+
+Docker:
+- `cd backend && docker build -t projectlibre/backend:latest .`
+- `docker run --rm -p 3001:3001 projectlibre/backend:latest`
+
 ## Common build issues
 - Ensure JDK 21 is used (Ant `javac` uses `source=21 target=21`).
 - On macOS, install GNU tar: `brew install gnu-tar` (provides `gtar`).
