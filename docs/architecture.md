@@ -26,5 +26,8 @@ ProjectLibre is organized into multiple Ant-built modules:
 - `com.projectlibre1.dialog` (dialogs)
 - `com.projectlibre1.exchange` and `net.sf.mpxj` (import/export)
 
+## Persistence adapter
+An optional Gradle submodule `spring-database-adapter` provides database persistence for key domain objects using Spring Data JPA. See the persistence guide for mapped entities, repositories, and usage: [persistence.md](persistence.md).
+
 ## Java version
 Ant build targets Java 21 (`source="21" target="21"`). Ensure JDK 21.
