@@ -1,0 +1,11 @@
+# Serve OpenAPI using swaggerapi/swagger-ui
+# Requires backend/openapi.json to be present
+FROM swaggerapi/swagger-ui:latest
+
+# Copy the generated OpenAPI spec
+COPY ./openapi.json /usr/share/nginx/html/openapi.json
+
+# Configure Swagger UI to load our spec
+ENV SWAGGER_JSON=/usr/share/nginx/html/openapi.json
+
+EXPOSE 8080
