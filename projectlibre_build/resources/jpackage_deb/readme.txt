@@ -5,7 +5,7 @@ cd packages/jpackage-deb
 ./make.sh
 
 Note that you need java and fakeroot to build the deb:
-sudo apt install openjdk-17-jdk
+sudo apt install openjdk-21-jdk
 sudo apt install fakeroot
 
 To create a rpm:

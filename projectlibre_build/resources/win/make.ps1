@@ -1,7 +1,7 @@
 $AppVersion = "@version@"
 $OutputDir = "app"
 
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
 
 
 $JpackagePath = Join-Path $env:JAVA_HOME "bin\jpackage.exe"
