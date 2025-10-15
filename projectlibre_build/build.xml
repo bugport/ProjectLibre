@@ -295,7 +295,7 @@
 			<arg value="+x"/>
 			<arg value="${packages}/projectlibre-${version}/projectlibre.sh"/>
 		</exec>
-		<exec executable="/opt/homebrew/bin/gtar"> <!-- to preserve permissions also add export COPYFILE_DISABLE=true -->
+		<exec executable="${gnu_tar}"> <!-- to preserve permissions also add export COPYFILE_DISABLE=true -->
 			<arg value="--numeric-owner"/>
 			<arg value="--owner=0"/>
 			<arg value="--group=0"/>
