@@ -12,6 +12,7 @@ ProjectLibre is a desktop project management application, similar to Microsoft P
   - projectlibre_contrib: bundled and repackaged third-party libraries
   - projectlibre_reports: JasperReports integration for reporting
   - projectlibre_build: top-level build, packaging, installers
+  - frontend: React + Vite + MUI web module (optional UI)
 
 Main class: `com.projectlibre1.main.Main` (in `projectlibre_ui`).
 

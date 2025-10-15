@@ -37,6 +37,26 @@ Configure in `projectlibre_build/build.properties`:
 - App jar under `projectlibre_build/dist/`
 - Packages under `projectlibre_build/packages/`
 
+## Frontend module (React + Vite)
+
+Location: `frontend/`
+
+Build options:
+- Local: `cd frontend && npm ci && npm run build` -> outputs to `frontend/dist/`
+- Dockerized via Gradle (recommended reproducible env):
+  - `./gradlew frontendBuildDocker` builds the frontend using `Dockerfile.builder`
+  - `./gradlew frontendDockerImage` packages the built `dist/` into an nginx image
+  - `./gradlew frontendDockerRun` runs the nginx image at `http://localhost:8080`
+
+Runtime image details (`Dockerfile.front`):
+- Multi-purpose runtime based on `nginx:alpine`
+- Copies `./frontend/dist` to `/usr/share/nginx/html/`
+- Exposes port `80`
+
+Notes:
+- Ensure `docker` is installed for the Gradle docker tasks
+- The builder image in `Dockerfile.builder` includes Node.js/npm to enable the frontend build
+
 ## Common build issues
 - Ensure JDK 21 is used (Ant `javac` uses `source=21 target=21`).
 - On macOS, install GNU tar: `brew install gnu-tar` (provides `gtar`).
