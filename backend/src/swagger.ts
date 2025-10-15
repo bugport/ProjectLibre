@@ -3,7 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 
 // Minimal OpenAPI 3.0 definition describing our current REST API
 // Keep this in sync with the handlers in server.ts
-const openApiSpec = {
+export const openApiSpec = {
   openapi: '3.0.3',
   info: {
     title: 'Project Management API',
