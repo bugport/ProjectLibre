@@ -173,3 +173,98 @@ tasks.register("publishToNexus") {
     group = "publishing"
     dependsOn("publishToSonatype", "closeAndReleaseSonatypeStagingRepository")
 }
+
+// Documentation: compile Markdown in docs/ to a single PDF
+// Uses local pandoc if available, otherwise falls back to dockerized pandoc/latex
+val compileDocsToPdf = tasks.register<Exec>("compileDocsToPdf") {
+    group = "documentation"
+    description = "Compile Markdown docs to a single PDF (build/docs/ProjectLibre-<version>.pdf)"
+
+    // Track all markdown files under docs as inputs; write under build/docs
+    inputs.files(fileTree("docs") { include("**/*.md") })
+    outputs.dir(layout.buildDirectory.dir("docs"))
+
+    doFirst {
+        val docsDir = file("docs")
+        if (!docsDir.exists()) {
+            throw GradleException("No docs directory found at ${docsDir}. Create a docs/ folder with .md files.")
+        }
+
+        val outputDir = layout.buildDirectory.dir("docs").get().asFile
+        outputDir.mkdirs()
+        val outputFile = outputDir.resolve("ProjectLibre-${project.version}.pdf")
+
+        // Prefer README-declared order; fall back to all .md files if none present
+        val orderedCandidates = listOf(
+            docsDir.resolve("overview.md"),
+            docsDir.resolve("getting-started.md"),
+            docsDir.resolve("configuration.md"),
+            docsDir.resolve("architecture.md"),
+            docsDir.resolve("build-and-packaging.md"),
+            docsDir.resolve("api.md"),
+            docsDir.resolve("testing.md"),
+            docsDir.resolve("troubleshooting.md"),
+            docsDir.resolve("contributing.md")
+        )
+
+        var docFiles: List<java.io.File> = orderedCandidates.filter { it.exists() }
+        if (docFiles.isEmpty()) {
+            docFiles = fileTree(docsDir) { include("**/*.md") }
+                .files
+                .sortedBy { it.name.lowercase() }
+        }
+        if (docFiles.isEmpty()) {
+            throw GradleException("No Markdown files found under ${docsDir}. Add .md files to compile.")
+        }
+
+        fun isOnPath(cmd: String): Boolean = try {
+            val res = project.exec {
+                commandLine("sh", "-c", "command -v ${cmd}")
+                isIgnoreExitValue = true
+            }
+            res.exitValue == 0
+        } catch (_: Exception) { false }
+
+        val pandocAvailable = isOnPath("pandoc")
+        val dockerAvailable = isOnPath("docker")
+
+        if (pandocAvailable) {
+            val args = mutableListOf(
+                "pandoc",
+                "-f", "gfm",
+                "--toc",
+                "-M", "title=ProjectLibre Documentation (${project.version})",
+                "-o", outputFile.absolutePath
+            )
+            args.addAll(docFiles.map { it.absolutePath })
+            (this as org.gradle.api.tasks.Exec).commandLine(args)
+        } else if (dockerAvailable) {
+            val projectRoot = project.projectDir.absolutePath
+            val outputRel = outputFile.relativeTo(project.projectDir).path.replace(java.io.File.separatorChar, '/')
+            val docRel = docFiles.map { it.relativeTo(project.projectDir).path.replace(java.io.File.separatorChar, '/') }
+            val args = mutableListOf(
+                "docker", "run", "--rm",
+                "-v", "${projectRoot}:/data",
+                "pandoc/latex",
+                "-f", "gfm",
+                "--toc",
+                "-M", "title=ProjectLibre Documentation (${project.version})",
+                "-o", "/data/${outputRel}"
+            )
+            docRel.forEach { args.add("/data/${it}") }
+            (this as org.gradle.api.tasks.Exec).commandLine(args)
+        } else {
+            throw GradleException(
+                "Cannot compile docs to PDF: neither pandoc nor docker is available. " +
+                "Install pandoc (with a LaTeX engine like TeX Live) or Docker to use the pandoc/latex image."
+            )
+        }
+    }
+}
+
+// Convenience alias
+tasks.register("docsPdf") {
+    group = "documentation"
+    description = "Alias for compileDocsToPdf"
+    dependsOn(compileDocsToPdf)
+}
