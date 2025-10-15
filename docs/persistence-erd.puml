@@ -1,0 +1,61 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity ProjectEntity {
+  + id : Long (PK)
+  + unique_id : Long (UK)
+  --
+  name : String
+  notes : String
+}
+
+entity TaskEntity {
+  + id : Long (PK)
+  + unique_id : Long (UK)
+  --
+  project_unique_id : Long (FK -> ProjectEntity.unique_id)
+  parent_unique_id : Long (FK -> TaskEntity.unique_id)
+  name : String
+  start_ms : Long
+  end_ms : Long
+  notes : String
+}
+
+entity ResourceEntity {
+  + id : Long (PK)
+  + unique_id : Long (UK)
+  --
+  name : String
+  resource_type : Integer
+  email : String
+  group_name : String
+  notes : String
+}
+
+entity AssignmentEntity {
+  + id : Long (PK)
+  --
+  task_unique_id : Long (FK -> TaskEntity.unique_id)
+  resource_unique_id : Long (FK -> ResourceEntity.unique_id)
+  units : Double
+  cost : Double
+}
+
+entity DependencyEntity {
+  + id : Long (PK)
+  --
+  predecessor_unique_id : Long (FK -> TaskEntity.unique_id)
+  successor_unique_id : Long (FK -> TaskEntity.unique_id)
+  type : Integer
+  lag : Long
+}
+
+ProjectEntity ||--o{ TaskEntity : project_unique_id
+TaskEntity ||--o{ TaskEntity : parent_unique_id
+TaskEntity ||--o{ AssignmentEntity : task_unique_id
+ResourceEntity ||--o{ AssignmentEntity : resource_unique_id
+TaskEntity ||--o{ DependencyEntity : predecessor
+TaskEntity ||--o{ DependencyEntity : successor
+
+@enduml
