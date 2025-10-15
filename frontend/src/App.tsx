@@ -16,11 +16,16 @@ import {
 } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Routes, Route, Link } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import TableChartIcon from '@mui/icons-material/TableChart'
 import EditIcon from '@mui/icons-material/Edit'
 import SettingsIcon from '@mui/icons-material/Settings'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import GroupIcon from '@mui/icons-material/Group'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import AssessmentIcon from '@mui/icons-material/Assessment'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 
@@ -60,7 +65,11 @@ function App() {
 
   const navItems = [
     { label: 'Dashboard', icon: <DashboardIcon />, to: '/' },
-    { label: 'Table', icon: <TableChartIcon />, to: '/table' },
+    { label: 'Gantt', icon: <TimelineIcon />, to: '/gantt' },
+    { label: 'Tasks', icon: <TableChartIcon />, to: '/tasks' },
+    { label: 'Resources', icon: <GroupIcon />, to: '/resources' },
+    { label: 'Calendar', icon: <CalendarMonthIcon />, to: '/calendar' },
+    { label: 'Reports', icon: <AssessmentIcon />, to: '/reports' },
     { label: 'Form', icon: <EditIcon />, to: '/form' },
     { label: 'Settings', icon: <SettingsIcon />, to: '/settings' },
   ]
@@ -109,12 +118,18 @@ function App() {
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
-          <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/table" element={<TablePage />} />
-            <Route path="/form" element={<FormPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
+          <Suspense fallback={<Typography>Loading...</Typography>}>
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/gantt" element={<GanttLazy />} />
+              <Route path="/tasks" element={<TasksLazy />} />
+              <Route path="/resources" element={<ResourcesLazy />} />
+              <Route path="/calendar" element={<CalendarLazy />} />
+              <Route path="/reports" element={<ReportsLazy />} />
+              <Route path="/form" element={<FormPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </Suspense>
         </Box>
       </Box>
     </ThemeProvider>
@@ -136,16 +151,7 @@ function DashboardPage() {
   )
 }
 
-function TablePage() {
-  return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Data Table
-      </Typography>
-      <Typography color="text.secondary">Interactive grid will go here.</Typography>
-    </Box>
-  )
-}
+// placeholder removed; using dedicated pages instead
 
 function FormPage() {
   return (
@@ -168,3 +174,10 @@ function SettingsPage() {
     </Box>
   )
 }
+
+// Lazy-load larger pages
+const GanttLazy = lazy(() => import('./pages/Gantt'))
+const TasksLazy = lazy(() => import('./pages/Tasks'))
+const ResourcesLazy = lazy(() => import('./pages/Resources'))
+const CalendarLazy = lazy(() => import('./pages/Calendar'))
+const ReportsLazy = lazy(() => import('./pages/Reports'))
