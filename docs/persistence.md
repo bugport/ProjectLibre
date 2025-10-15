@@ -17,6 +17,10 @@ The adapter maps a subset of domain state into relational tables:
 - Dependency (`dependencies`)
   - `id`, `predecessor_unique_id`, `successor_unique_id`, `type`, `lag`
 
+ER diagram:
+
+![ER Diagram](persistence-erd.png)
+
 Notes:
 - We use ProjectLibre "uniqueId" as the stable cross-table reference.
 - Additional ProjectLibre fields exist in memory but are not yet persisted. Extend entities if needed.
